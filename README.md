@@ -6,4 +6,8 @@ This is only for educative reason, i don't mind what you do with this code.
 
 .EXE file is not working, let me fix that later.
 
-Default token is mine, edit file to change it.
+Default token is none, edit file to change it.
+
+# Instructions
+
+Just run Installer.py and paste your webhook in webhook.json
