@@ -11,3 +11,5 @@ Default token is none, edit file to change it.
 # Instructions
 
 Just run Installer.py and paste your webhook in webhook.json
+
+You need webhook.json to run it (In the same folder)
